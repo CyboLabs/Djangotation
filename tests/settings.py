@@ -7,5 +7,5 @@ DATABASES = {
 }
 
 INSTALLED_APPS = [
-    'djangotation',
+    'tests'
 ]

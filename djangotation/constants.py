@@ -1,0 +1,3 @@
+IS_ANNOTATION_ATTR_NAME = '_djangotation_is_annotation'
+ANNOTATION_EXPRESSION_ATTR_NAME = '_djangotation_annotation_expression'
+ANNOTATION_TARGET_ATTR_NAME = '_djangotation_annotation_target_name'
