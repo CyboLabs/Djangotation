@@ -32,6 +32,7 @@ class Author:
 
     page_count = djangotation.tations.count('book__page_count', name='page_count')
     
+    # Might need to be with a custom F() class :/
     @djangotation.annotation(Count('book__page_count'))
     def other_page_count(self):
         return operator.add(book.page_set.count() for book in author.book_set.all())
