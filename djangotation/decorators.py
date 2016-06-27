@@ -1,6 +1,8 @@
 from functools import partial
 
-from .constants import IS_ANNOTATION_ATTR_NAME, ANNOTATION_EXPRESSION_ATTR_NAME, ANNOTATION_TARGET_ATTR_NAME
+from .base import DjangoTation
+from .exceptions import AnnotationDoesNotExist
+
 
 __all__ = (
     'annotation',
@@ -8,34 +10,27 @@ __all__ = (
 )
 
 
-class _empty:
-    pass
+def wrap_class_as_func(instance, func):
+    for wrapper_attr in ('__module__', '__name__', '__qualname__', '__doc__'):
+        try:
+            setattr(instance, wrapper_attr, getattr(func, wrapper_attr))
+        except AttributeError:
+            pass
 
 
 class AnnotationProperty:
     def __init__(self, annotate, func):
-        self.func = func
-        if not hasattr(annotate, 'resolve_expression') and callable(annotate):
-            annotate = annotate()
-
-        setattr(self, ANNOTATION_EXPRESSION_ATTR_NAME, annotate)
-
-        for wrapper_attr in ('__module__', '__name__', '__qualname__', '__doc__'):
-            try:
-                setattr(self, wrapper_attr, getattr(func, wrapper_attr))
-            except AttributeError:
-                pass
+        self._djangotation = DjangoTation(annotate, func)
+        wrap_class_as_func(self, func)
 
     def __get__(self, instance, owner):
         if instance is not None:
-            annotation_target_attr = getattr(self.func, ANNOTATION_TARGET_ATTR_NAME, None)
-            if annotation_target_attr:
-                annotation_result = getattr(instance, annotation_target_attr, _empty)
-                if annotation_result is not _empty:
-                    return annotation_result
-        return self.func(instance)
-
-setattr(AnnotationProperty, IS_ANNOTATION_ATTR_NAME, True)
+            djangotation = self._djangotation(instance)
+            try:
+                return djangotation.annotation_result
+            except AnnotationDoesNotExist:
+                pass
+        return self._djangotation.func(instance)
 
 
 class CachedAnnotationProperty(AnnotationProperty):
@@ -43,7 +38,7 @@ class CachedAnnotationProperty(AnnotationProperty):
     def __get__(self, instance, owner):
         if instance is None:
             return self
-        res = instance.__dict__[self.func.__name__] = super().__get__(instance, owner)
+        res = instance.__dict__[self._djangotation.func.__name__] = super(CachedAnnotationProperty, self).__get__(instance, owner)
         return res
 
 
