@@ -1,6 +1,6 @@
 from functools import partial
 
-from .base import DjangoTation
+from .base import TationDjangoTationManager
 from .exceptions import AnnotationDoesNotExist
 
 
@@ -21,7 +21,7 @@ def wrap_class_as_func(instance, func):
 class AnnotationProperty:
     def __init__(self, annotate, func):
         self.func = func
-        self._djangotation = DjangoTation(annotate, func.__name__)
+        self._djangotation = TationDjangoTationManager(annotate, func.__name__)
         wrap_class_as_func(self, func)
 
     def __get__(self, instance, owner):

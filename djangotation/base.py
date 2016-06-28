@@ -7,8 +7,8 @@ class _empty:
     pass
 
 
-class DjangoTation:
-    """Internal class for djangotation representation"""
+class TationDjangoTationManager:
+    """Internal class for djangotation representation on tations"""
 
     __slots__ = ['annotation', 'target_annotation_name']
 
@@ -21,14 +21,14 @@ class DjangoTation:
         self.target_annotation_name = func_name
 
     def __call__(self, model_instance):
-        return PopulatedDjangoTation(
+        return PopulatedTationDjangoTationManager(
             annotation=self.annotation,
             target_annotation_name=self.target_annotation_name,
             model_instance=model_instance
         )
 
 
-class PopulatedDjangoTation:
+class PopulatedTationDjangoTationManager:
     __slots__ = ['annotation', 'model_instance', 'target_annotation_name']
 
     def __init__(self, annotation, target_annotation_name, model_instance):
