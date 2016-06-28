@@ -10,34 +10,31 @@ class _empty:
 class DjangoTation:
     """Internal class for djangotation representation"""
 
-    __slots__ = ['annotation', 'func', 'target_annotation_name']
+    __slots__ = ['annotation', 'target_annotation_name']
 
-    def __init__(self, annotation, func):
+    def __init__(self, annotation, func_name):
 
         if not hasattr(annotation, 'resolve_expression') and callable(annotation):
             self.annotation = annotation()
         else:
             self.annotation = annotation
-        self.func = func
-        self.target_annotation_name = '__djangotation_' + func.__name__
+        self.target_annotation_name = func_name
 
     def __call__(self, model_instance):
         return PopulatedDjangoTation(
             annotation=self.annotation,
-            func=self.func,
+            target_annotation_name=self.target_annotation_name,
             model_instance=model_instance
         )
 
 
-class PopulatedDjangoTation(DjangoTation):
-    __slots__ = ['model_instance']
+class PopulatedDjangoTation:
+    __slots__ = ['annotation', 'model_instance', 'target_annotation_name']
 
-    def __init__(self, annotation, func, model_instance):
-        super(PopulatedDjangoTation, self).__init__(annotation, func)
+    def __init__(self, annotation, target_annotation_name, model_instance):
+        self.annotation = annotation
+        self.target_annotation_name = target_annotation_name
         self.model_instance = weakref.ref(model_instance)
-
-    def model_instance_factory(self, model_instance):
-        raise AttributeError
 
     @property
     def is_annotated(self):

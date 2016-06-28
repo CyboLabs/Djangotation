@@ -20,7 +20,8 @@ def wrap_class_as_func(instance, func):
 
 class AnnotationProperty:
     def __init__(self, annotate, func):
-        self._djangotation = DjangoTation(annotate, func)
+        self.func = func
+        self._djangotation = DjangoTation(annotate, func.__name__)
         wrap_class_as_func(self, func)
 
     def __get__(self, instance, owner):
@@ -30,7 +31,11 @@ class AnnotationProperty:
                 return djangotation.annotation_result
             except AnnotationDoesNotExist:
                 pass
-        return self._djangotation.func(instance)
+        return self.func(instance)
+
+    def __set__(self, instance, value):
+        if instance is not None:
+            instance.__dict__[self.func.__name__] = value
 
 
 class CachedAnnotationProperty(AnnotationProperty):
@@ -38,7 +43,7 @@ class CachedAnnotationProperty(AnnotationProperty):
     def __get__(self, instance, owner):
         if instance is None:
             return self
-        res = instance.__dict__[self._djangotation.func.__name__] = super(CachedAnnotationProperty, self).__get__(instance, owner)
+        res = instance.__dict__[self.func.__name__] = super(CachedAnnotationProperty, self).__get__(instance, owner)
         return res
 
 
