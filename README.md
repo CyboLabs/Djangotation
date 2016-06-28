@@ -14,10 +14,10 @@ class Author:
 
 class Author:
 
-    book_count = djangotation.tations.count('book', name='book_count')
-    book_count_book_count = djangotation.tations.sum('book_count', 'book_count', name='book_count_book_count')
+    book_count = djangotation.tations.count('book')
+    book_count_book_count = djangotation.tations.sum('book_count', 'book_count')
 
-    other_book_count = djangotation.tations.count('book', name='other_book_count', groups=['books'])
+    other_book_count = djangotation.tations.count('book', groups=['books'])
     # Author.objects.annotate_books()
     # Author.objects.annotate_group('books')
     # Author.objects.annotate_groups(['books'])
@@ -26,11 +26,11 @@ class Author:
 
 class Book:
     
-    page_count = djangotation.tations.count('page', name='page_count')
+    page_count = djangotation.tations.count('page')
 
 class Author:
 
-    page_count = djangotation.tations.count('book__page_count', name='page_count')
+    page_count = djangotation.tations.count('book__page_count')
     
     # Might need to be with a custom F() class :/
     @djangotation.annotation(Count('book__page_count'))
