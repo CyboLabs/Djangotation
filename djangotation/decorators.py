@@ -25,12 +25,6 @@ class AnnotationProperty:
         wrap_class_as_func(self, func)
 
     def __get__(self, instance, owner):
-        if instance is not None:
-            djangotation = self._djangotation(instance)
-            try:
-                return djangotation.annotation_result
-            except AnnotationDoesNotExist:
-                pass
         return self.func(instance)
 
     def __set__(self, instance, value):
