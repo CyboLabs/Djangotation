@@ -7,7 +7,7 @@ __all__ = (
 
 class QuerySet(DjangoQuerySet):
 
-    def set_annotation(self, annotation_name):
+    def djangotation(self, annotation_name):
         try:
             annotation_function = self.model.__dict__[annotation_name]
         except KeyError:
@@ -16,11 +16,11 @@ class QuerySet(DjangoQuerySet):
             if getattr(annotation_function, '_djangotation', False):
                 annotation_name = annotation_function._djangotation.target_annotation_name
                 annotation_expression = annotation_function._djangotation.annotation
-                return lambda: self.annotate(**{annotation_name: annotation_expression})
+                return self.annotate(**{annotation_name: annotation_expression})
         raise AttributeError(annotation_name)
 
-    def __getattr__(self, item):
-        if item.startswith('annotate_'):
-            annotation_name = item[9:]
-            return self.set_annotation(annotation_name)
-        raise AttributeError(item)
+    def djangotation_group(self, group_name):
+        pass
+
+    def djangotation_groups(self, group_names):
+        pass
