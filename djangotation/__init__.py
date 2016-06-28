@@ -8,3 +8,5 @@ __all__ = (
     'QuerySet',
     'Manager'
 )
+
+default_app_config = 'djangotation.apps.DjangoTationAppConfig'

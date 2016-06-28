@@ -47,3 +47,9 @@ class PopulatedDjangoTation:
         except AttributeError:
             pass
         raise AnnotationDoesNotExist()
+
+
+def register_djangotation_models(model):
+    for name in model.__dict__:
+        if hasattr(model.__dict__[name], '_djangotation'):
+            print(name)
