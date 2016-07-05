@@ -1,6 +1,6 @@
 from django.db import models
 
-from djangotation import Manager, annotation
+from djangotation import Manager, annotation, tations
 
 
 class Author(models.Model):
@@ -15,6 +15,8 @@ class Author(models.Model):
 
     def manual_book_count(self):
         return len(self.book_set.all())
+
+    generic_book_count = tations.count('book')
 
 
 class Book(models.Model):

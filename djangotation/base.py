@@ -53,14 +53,19 @@ class ModelDjangoTationManager:
     def __init__(self, model_class):
         self.model_class = model_class
         self.__groups = defaultdict(lambda: [])
-        for tation_name in model_class.__dict__:
+        for tation_name in self.model_class.__dict__:
             tation = model_class.__dict__[tation_name]
             if hasattr(tation, '_djangotation'):
+                self.setup_tation(tation, tation_name)
                 self.register_groups(tation)
 
     def register_groups(self, tation):
         for group_name in tation._djangotation.groups:
             self.__groups[group_name].append(tation)
+
+    def setup_tation(self, tation, name):
+        if hasattr(tation, 'setup_tation'):
+            tation.setup_tation(self.model_class, name)
 
     def tations_for_group(self, group_name):
         if group_name not in self.__groups:
@@ -69,8 +74,10 @@ class ModelDjangoTationManager:
 
 
 def register_djangotation_models(model):
+    setup_model = False
     for name in model.__dict__:
-        if hasattr(model.__dict__[name], '_djangotation'):
-            break
-    else:
+        potential_tation = model.__dict__[name]
+        if hasattr(potential_tation, '_djangotation'):
+            setup_model = True
+    if setup_model:
         model._djangotation = ModelDjangoTationManager(model)

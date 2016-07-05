@@ -1,7 +1,6 @@
 from functools import partial
 
 from .base import TationDjangoTationManager
-from .exceptions import AnnotationDoesNotExist
 
 
 __all__ = (
@@ -25,7 +24,12 @@ class AnnotationProperty:
         wrap_class_as_func(self, func)
 
     def __get__(self, instance, owner):
-        return self.func(instance)
+        if instance is None:
+            return self
+        try:
+            return instance.__dict__[self.func.__name__]
+        except KeyError:
+            return self.func(instance)
 
     def __set__(self, instance, value):
         if instance is not None:

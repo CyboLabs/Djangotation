@@ -12,7 +12,7 @@ class QuerySet(DjangoQuerySet):
         annotation_expression = tation._djangotation.annotation
         return self.annotate(**{annotation_name: annotation_expression})
 
-    def djangotation(self, annotation_name):
+    def _apply_djangotation(self, annotation_name):
         try:
             annotation_function = self.model.__dict__[annotation_name]
         except KeyError:
@@ -21,6 +21,13 @@ class QuerySet(DjangoQuerySet):
             if getattr(annotation_function, '_djangotation', False):
                 return self._apply_tation(annotation_function)
         raise AttributeError(annotation_name)
+
+    def djangotation(self, *annotation_names):
+        assert annotation_names
+        current_queryset = self
+        for annotation_name in annotation_names:
+            current_queryset = self._apply_djangotation(annotation_name)
+        return current_queryset
 
     def djangotation_group(self, group_name):
         current_queryset = self
